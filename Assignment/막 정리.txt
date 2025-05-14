@@ -1,0 +1,35 @@
+P 멤버 변수가 char배열의 포인터이기 때문에 구조를 이해하기 위해 int로 이해해보려 했다.
+	cout << p.get() << endl; 주소
+cout << p << endl;	주소
+cout << *p << endl; int 값
+
+Get()은 unique point의 주소가 나옴
+
+unique_ptr<int[]> p = make_unique<int[]>(5);
+p[1] = 2;
+cout << p.get() << endl;
+cout << p << endl;
+cout << p[1] << endl;
+
+그냥 배열처럼 사용하면 됨!
+
+is.read((char*)name.data(), sizeof(Player));
+		is.read((char*)&score, sizeof(int));
+		is.read((char*)&id, sizeof(size_t));
+		is.read((char*)&num, sizeof(size_t));
+
+		1번 객체 이름:tbgkdyf        , 아이디:1585002, 점수:225936740, 자원수:482
+2번 객체 이름:ebodemiipwcovky, 아이디:960538 , 점수:353919937, 자원수:231
+3번 객체 이름:bupee          , 아이디:250535 , 점수:275456330, 자원수:16
+4번 객체 이름:bwdgnvrstnxo   , 아이디:2221181, 점수:22271892, 자원수:269
+5번 객체 이름:hnln           , 아이디:550535 , 점수:276748627, 자원수:245
+6번 객체 이름:dvrlgaiqnnmtqe , 아이디:2296425, 점수:226278669, 자원수:426
+7번 객체 이름:rnfsutjmxth    , 아이디:1699554, 점수:205153856, 자원수:32
+8번 객체 이름:hqqkntxtbcuxu  , 아이디:1956483, 점수:278670016, 자원수:282
+9번 객체 이름:vcoyimkqeyohal , 아이디:2012612, 점수:380493315, 자원수:358
+
+첫 시도 write를 그대로 읽음 => name이 제대로 저장x
+각자 저장 score가 이상한 값 저장
+
+-		p	0x0000017cf3bf5990 ""	std::unique_ptr<char [0],std::default_delete<char [0]>>
+			0x000002249FF466CF
