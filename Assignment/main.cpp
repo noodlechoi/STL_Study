@@ -6,8 +6,8 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
-#include <ranges>
 
 using namespace std;
 
@@ -120,32 +120,32 @@ int main()
 	cout << endl;
 
 	// 3
-	//unordered_map<size_t, vector<Player>> equal_id;
-	//for (const Player& player : players) {
-	//	equal_id[player.GetID()].push_back(player);
-	//}
+	unordered_map<size_t, vector<Player>> equal_id;
+	for (const Player& player : players) {
+		equal_id[player.GetID()].push_back(player);
+	}
 
-	//// 하나면 삭제
-	//for (auto it = equal_id.begin(); it != equal_id.end(); ) {
-	//	if (it->second.size() == 1)
-	//		it = equal_id.erase(it);
-	//	else
-	//		++it;
-	//}
+	// 하나면 삭제
+	for (auto it = equal_id.begin(); it != equal_id.end(); ) {
+		if (it->second.size() == 1)
+			it = equal_id.erase(it);
+		else
+			++it;
+	}
 
 	// 파일 출력
-	/*ofstream out{ "같은아이디.txt" };
+	ofstream out{ "같은아이디.txt" };
 	for (const auto& [id, player] : equal_id) {
 		for (const Player p : player) {
 			out << "이름: " << p.GetName() << endl;
 			out << "아이디: " << p.GetID() << endl;
 		}
-	}*/
-	//cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
-	//cout << endl;
+	}
+	cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
+	cout << endl;
 
 	// 4
-	/*for (Player& player : players) {
+	for (Player& player : players) {
 		player.sort();
 	}
 
@@ -154,36 +154,87 @@ int main()
 		if (10 <= player.CountA()) {
 			++cnt;
 		}
-	}*/
+	}
 
-	/*cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
-	cout << endl;*/
+	cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
+	cout << endl;
 
 	size_t id;
 	while (true) {
-		cout << "아이디 입력: ";
+		cout << "찾을 아이디 입력: ";
 		cin >> id;
 		// id 기준
-		sort(players.begin(), players.end());
+		cout << "id 기준 오름차순 정렬" << endl;
+		{
+			sort(players.begin(), players.end());
 
-		/*
-		아이디 입력: 2345678
-이름: skj, 아이디: 2345678, 점수: -25966212, 자원수: 581
-
-이름: axo, 아이디: 2345678, 점수: -73613408, 자원수: 259
-		*/
-
-		for (auto it = players.cbegin(); it != players.cend(); ++it) {
-			if (id == it->GetID()) {
-				if (players.cbegin() != it) {
-					cout << *(it - 1) << endl;
-				}
-				cout << *it << endl;
-				if (players.cend() - 1 != it) {
-					cout << *(it + 1) << endl;
+			array<Player, 2'500'000>::iterator previous;
+			for (auto it = players.begin(); it != players.end(); ++it) {
+				if (id == it->GetID()) {
+					if (it != (previous + 1)) {
+						if (players.cbegin() != it) {
+							cout << "앞 player" << endl;
+							cout << *(it - 1) << endl;
+						}
+						cout << *it << endl;
+					}
+					if (players.cend() - 1 != it) {
+						cout << "뒤 player" << endl;
+						cout << *(it + 1) << endl;
+					}
+					previous = it;
 				}
 			}
 		}
-	}
+		cout << endl;
 
+		// name 기준
+		cout << "name 기준 오름차순 정렬" << endl;
+		{
+			sort(players.begin(), players.end(), [](const Player& lhs, const Player& rhs) {
+				return lhs.GetName() < rhs.GetName();
+				});
+			string previous;
+			for (auto it = players.begin(); it != players.end(); ++it) {
+				if (id == it->GetID()) {
+					if (players.cbegin() != it) {
+						cout << "앞 player" << endl;
+						cout << *(it - 1) << endl;
+						previous = it->GetName();
+					}
+					cout << *it << endl;
+					if (players.cend() - 1 != it && previous != (it + 1)->GetName()) {
+						cout << "뒤 player" << endl;
+						cout << *(it + 1) << endl;
+					}
+				}
+			}
+		}
+		cout << endl;
+
+
+		// score 기준
+		cout << "score 기준 오름차순 정렬" << endl;
+		{
+			sort(players.begin(), players.end(), [](const Player& lhs, const Player& rhs) {
+				return lhs.GetScore() < rhs.GetScore();
+				});
+			int previous{};
+			for (auto it = players.begin(); it != players.end(); ++it) {
+				if (id == it->GetID()) {
+					if (players.cbegin() != it) {
+						cout << "앞 player" << endl;
+						cout << *(it - 1) << endl;
+						previous = it->GetScore();
+					}
+					cout << *it << endl;
+					if (players.cend() - 1 != it && previous != (it + 1)->GetScore()) {
+						cout << "뒤 player" << endl;
+						cout << *(it + 1) << endl;
+					}
+				}
+			}
+		}
+		cout << endl;
+	}
 }
