@@ -38,6 +38,25 @@ public:
 		return id < rhs.id;
 	}
 
+	void sort() {
+		std::sort(p.get(), p.get() + num);
+	}
+
+	// 'a'의 개수 리턴
+	size_t CountA() {
+		int cnt{};
+		for (int i = 0; i < num; ++i) {
+			if ('a' == p[i]) {
+				++cnt;
+			}
+			else {
+				// 이미 정렬되어있기 때문에 중단
+				break;
+			}
+		}
+		return cnt;
+	}
+
 	int GetScore() const { return score; }
 	size_t GetID() const { return id; }
 	string GetName() const { return name; }
@@ -76,7 +95,7 @@ array<Player, 2'500'000> players;
 
 int main()
 {
-	ifstream in{ "2025 STL 과제 파일 - 2022180039", ios::binary};
+	ifstream in{ "2025 STL 과제 파일 - 2022180039", ios::binary };
 	if (not in) {
 		throw 2022180039;
 	}
@@ -93,21 +112,49 @@ int main()
 	//sort(players.begin(), players.end());
 	//cout << players.back() << endl;
 
-	double average = (double)accumulate(players.begin(), players.end(), 0, [](int sum, const Player& p) {
+	double average = (double)accumulate(players.begin(), players.end(), 0, [](size_t sum, const Player& p) {
 		return sum + p.GetScore();
 		}) / players.size();
 	cout << "score 평균 값: " << average << endl;
+	cout << endl;
 
 	// 3
-	unordered_map<size_t, Player> equal_id;
+	unordered_map<size_t, vector<Player>> equal_id;
 	for (const Player& player : players) {
-		equal_id[player.GetID()] = player;
+		equal_id[player.GetID()].push_back(player);
+	}
+
+	// 하나면 삭제
+	for (auto it = equal_id.begin(); it != equal_id.end(); ) {
+		if (it->second.size() == 1)
+			it = equal_id.erase(it);
+		else
+			++it;
 	}
 
 	// 파일 출력
-	ofstream out{ "같은아이디.txt" };
-	for (const auto& [id, player] : equal_id | views::take(10)) {
-		cout << "같은 아이디: " << id << endl;
-		cout << "이름: " << player.GetName() << endl;
+	/*ofstream out{ "같은아이디.txt" };
+	for (const auto& [id, player] : equal_id) {
+		for (const Player p : player) {
+			out << "이름: " << p.GetName() << endl;
+			out << "아이디: " << p.GetID() << endl;
+		}
+	}*/
+	cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
+	cout << endl;
+
+	// 4
+	for (Player& player : players) {
+		player.sort();
 	}
+
+	int cnt{};
+	for (Player& player : players) {
+		if (10 <= player.CountA()) {
+			++cnt;
+		}
+	}
+
+	cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
+	cout << endl;
 }
