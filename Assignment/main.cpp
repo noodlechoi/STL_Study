@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -36,7 +35,7 @@ public:
 	}
 
 	bool operator<(const Player& rhs) const {
-		return id < rhs.id;
+		return score < rhs.score;
 	}
 
 	void sort() {
@@ -107,57 +106,64 @@ int main()
 	}
 	cout << "마지막 player의 정보" << endl;
 	cout << players.back() << endl;
+	
 
-	// 2
-	cout << "가장 큰 점수를 가진 player\n" << *max_element(players.begin(), players.end()) << endl;
-	//sort(players.begin(), players.end());
-	//cout << players.back() << endl;
+	{
+		// 2
+		cout << "가장 큰 점수를 가진 player\n" << *max_element(players.begin(), players.end()) << endl;
+		//sort(players.begin(), players.end());
+		//cout << players.back() << endl;
 
-	double average = (double)accumulate(players.begin(), players.end(), 0, [](size_t sum, const Player& p) {
-		return sum + p.GetScore();
-		}) / players.size();
-	cout << "score 평균 값: " << average << endl;
-	cout << endl;
-
-	// 3
-	unordered_map<size_t, vector<Player>> equal_id;
-	for (const Player& player : players) {
-		equal_id[player.GetID()].push_back(player);
+		double average = (double)accumulate(players.begin(), players.end(), (size_t)0, [](size_t sum, const Player& p) {
+			return sum + p.GetScore();
+			}) / players.size();
+		cout << "score 평균 값: " << average << endl;
+		cout << endl;
 	}
 
-	// 하나면 삭제
-	for (auto it = equal_id.begin(); it != equal_id.end(); ) {
-		if (it->second.size() == 1)
-			it = equal_id.erase(it);
-		else
-			++it;
-	}
-
-	// 파일 출력
-	ofstream out{ "같은아이디.txt" };
-	for (const auto& [id, player] : equal_id) {
-		for (const Player p : player) {
-			out << "이름: " << p.GetName() << endl;
-			out << "아이디: " << p.GetID() << endl;
+	{
+		// 3
+		unordered_map<size_t, vector<Player>> equal_id;
+		for (const Player& player : players) {
+			equal_id[player.GetID()].push_back(player);
 		}
-	}
-	cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
-	cout << endl;
 
-	// 4
-	for (Player& player : players) {
-		player.sort();
-	}
-
-	int cnt{};
-	for (const Player& player : players) {
-		if (10 <= player.CountA()) {
-			++cnt;
+		// 하나면 삭제
+		for (auto it = equal_id.begin(); it != equal_id.end(); ) {
+			if (1 == it->second.size())
+				it = equal_id.erase(it);
+			else
+				++it;
 		}
+
+		// 파일 출력
+		ofstream out{ "같은아이디.txt" };
+		for (const auto& [id, player] : equal_id) {
+			for (const Player p : player) {
+				out << "이름: " << p.GetName() << endl;
+				out << "아이디: " << p.GetID() << endl;
+			}
+		}
+		cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
+		cout << endl;
 	}
 
-	cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
-	cout << endl;
+	{
+		// 4
+		for (Player& player : players) {
+			player.sort();
+		}
+
+		int cnt{};
+		for (const Player& player : players) {
+			if (10 <= player.CountA()) {
+				++cnt;
+			}
+		}
+
+		cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
+		cout << endl;
+	}
 
 	size_t id;
 	while (true) {
@@ -166,8 +172,9 @@ int main()
 		// id 기준
 		cout << "id 기준 오름차순 정렬" << endl;
 		{
-			sort(players.begin(), players.end());
-
+			sort(players.begin(), players.end(), [](const Player& lhs, const Player& rhs) {
+				return lhs.GetID() < rhs.GetID();
+			});
 			array<Player, 2'500'000>::iterator previous;
 			for (auto it = players.begin(); it != players.end(); ++it) {
 				if (id == it->GetID()) {
@@ -216,9 +223,7 @@ int main()
 		// score 기준
 		cout << "score 기준 오름차순 정렬" << endl;
 		{
-			sort(players.begin(), players.end(), [](const Player& lhs, const Player& rhs) {
-				return lhs.GetScore() < rhs.GetScore();
-				});
+			sort(players.begin(), players.end());
 			int previous{};
 			for (auto it = players.begin(); it != players.end(); ++it) {
 				if (id == it->GetID()) {
