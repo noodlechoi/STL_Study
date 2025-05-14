@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_map>
+#include <vector>
 #include <ranges>
 
 using namespace std;
@@ -43,7 +44,7 @@ public:
 	}
 
 	// 'a'의 개수 리턴
-	size_t CountA() {
+	size_t CountA() const {
 		int cnt{};
 		for (int i = 0; i < num; ++i) {
 			if ('a' == p[i]) {
@@ -119,18 +120,18 @@ int main()
 	cout << endl;
 
 	// 3
-	unordered_map<size_t, vector<Player>> equal_id;
-	for (const Player& player : players) {
-		equal_id[player.GetID()].push_back(player);
-	}
+	//unordered_map<size_t, vector<Player>> equal_id;
+	//for (const Player& player : players) {
+	//	equal_id[player.GetID()].push_back(player);
+	//}
 
-	// 하나면 삭제
-	for (auto it = equal_id.begin(); it != equal_id.end(); ) {
-		if (it->second.size() == 1)
-			it = equal_id.erase(it);
-		else
-			++it;
-	}
+	//// 하나면 삭제
+	//for (auto it = equal_id.begin(); it != equal_id.end(); ) {
+	//	if (it->second.size() == 1)
+	//		it = equal_id.erase(it);
+	//	else
+	//		++it;
+	//}
 
 	// 파일 출력
 	/*ofstream out{ "같은아이디.txt" };
@@ -140,21 +141,49 @@ int main()
 			out << "아이디: " << p.GetID() << endl;
 		}
 	}*/
-	cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
-	cout << endl;
+	//cout << "같은 아이디를 가진 객체의 개수: " << equal_id.size() << endl;
+	//cout << endl;
 
 	// 4
-	for (Player& player : players) {
+	/*for (Player& player : players) {
 		player.sort();
 	}
 
 	int cnt{};
-	for (Player& player : players) {
+	for (const Player& player : players) {
 		if (10 <= player.CountA()) {
 			++cnt;
 		}
+	}*/
+
+	/*cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
+	cout << endl;*/
+
+	size_t id;
+	while (true) {
+		cout << "아이디 입력: ";
+		cin >> id;
+		// id 기준
+		sort(players.begin(), players.end());
+
+		/*
+		아이디 입력: 2345678
+이름: skj, 아이디: 2345678, 점수: -25966212, 자원수: 581
+
+이름: axo, 아이디: 2345678, 점수: -73613408, 자원수: 259
+		*/
+
+		for (auto it = players.cbegin(); it != players.cend(); ++it) {
+			if (id == it->GetID()) {
+				if (players.cbegin() != it) {
+					cout << *(it - 1) << endl;
+				}
+				cout << *it << endl;
+				if (players.cend() - 1 != it) {
+					cout << *(it + 1) << endl;
+				}
+			}
+		}
 	}
 
-	cout << "'a'가 10글자 이상인 객체의 개수: " << cnt << endl;
-	cout << endl;
 }
