@@ -3,27 +3,52 @@
 #include <string>
 #include <fstream>
 #include <array>
+#include <algorithm>
+#include <numeric>
+#include <unordered_map>
+#include <ranges>
 
 using namespace std;
 
 class Player {
 public:
+	Player() :id{}, score{}, num{} {}
+	Player(const Player& other)  
+		: name{other.name}, score{other.score}, id{other.id}, num{other.num}
+	{
+		p = std::make_unique<char[]>(num);
+		memcpy(p.get(), other.p.get(), num);
+	}
+	Player& operator=(const Player& other) {
+		if (this == &other)
+			return *this;
+		name = other.name;
+		score = other.score;
+		id = other.id;
+		num = other.num;
+
+		p.release();
+		p = std::make_unique<char[]>(num);
+		memcpy(p.get(), other.p.get(), num);
+
+		return *this;
+	}
+
+	bool operator<(const Player& rhs) const {
+		return id < rhs.id;
+	}
+
+	int GetScore() const { return score; }
+	size_t GetID() const { return id; }
+	string GetName() const { return name; }
+
 	void write(ostream& os) {
 		os.write((char*)this, sizeof(Player));
 		os.write((char*)p.get(), num);
 	}
 	void read(istream& is) {
-		/*1번 객체 이름 : tbgkdyf, 아이디 : 1585002, 점수 : 225936740, 자원수 : 482
-		2번 객체 이름 : ebodemiipwcovky, 아이디 : 960538, 점수 : 353919937, 자원수 : 231
-		3번 객체 이름 : bupee, 아이디 : 250535, 점수 : 275456330, 자원수 : 16
-		4번 객체 이름 : bwdgnvrstnxo, 아이디 : 2221181, 점수 : 22271892, 자원수 : 269
-		5번 객체 이름 : hnln, 아이디 : 550535, 점수 : 276748627, 자원수 : 245
-		6번 객체 이름 : dvrlgaiqnnmtqe, 아이디 : 2296425, 점수 : 226278669, 자원수 : 426
-		7번 객체 이름 : rnfsutjmxth, 아이디 : 1699554, 점수 : 205153856, 자원수 : 32
-		8번 객체 이름 : hqqkntxtbcuxu, 아이디 : 1956483, 점수 : 278670016, 자원수 : 282
-		9번 객체 이름 : vcoyimkqeyohal, 아이디 : 2012612, 점수 : 380493315, 자원수 : 358*/
-
 		is.read((char*)this, sizeof(Player));
+		p.release();
 		p = make_unique<char[]>(num);
 		is.read((char*)p.get(), num);
 	}
@@ -32,9 +57,9 @@ public:
 		os << "이름: " << other.name << ", 아이디: " << other.id << ", 점수: " << other.score
 			<< ", 자원수: " << other.num << endl;
 		os << "저장된 글자: ";
-		/*for (int i = 0; i < other.num; ++i) {
+		for (int i = 0; i < other.num; ++i) {
 			os << other.p[i];
-		}*/
+		}
 		os << endl;
 		return os;
 	}
@@ -56,11 +81,33 @@ int main()
 		throw 2022180039;
 	}
 
+	// 1
 	for (int i = 0; i < players.size(); ++i) {
 		players[i].read(in);
 	}
+	cout << "마지막 player의 정보" << endl;
+	cout << players.back() << endl;
 
+	// 2
+	cout << "가장 큰 점수를 가진 player\n" << *max_element(players.begin(), players.end()) << endl;
+	//sort(players.begin(), players.end());
+	//cout << players.back() << endl;
+
+	double average = (double)accumulate(players.begin(), players.end(), 0, [](int sum, const Player& p) {
+		return sum + p.GetScore();
+		}) / players.size();
+	cout << "score 평균 값: " << average << endl;
+
+	// 3
+	unordered_map<size_t, Player> equal_id;
 	for (const Player& player : players) {
-		cout << player << endl;
+		equal_id[player.GetID()] = player;
+	}
+
+	// 파일 출력
+	ofstream out{ "같은아이디.txt" };
+	for (const auto& [id, player] : equal_id | views::take(10)) {
+		cout << "같은 아이디: " << id << endl;
+		cout << "이름: " << player.GetName() << endl;
 	}
 }
