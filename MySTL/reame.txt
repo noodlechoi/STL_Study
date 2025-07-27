@@ -1,0 +1,40 @@
+vector
+1. sequence container - dynamic size array
+2. std::pmr::polymorphic_allocator - std::pmr::memory_resource에 의존하는 다른 allocation을 사용할 수 있는 allocator
+
+- std::vector<bool>을 제외하고 contiguosly하게 저장
+- iterator뿐만 아니라 오프셋 포인터를 사용해서 원소에 접근 가능
+- 저장소는 필요에 따라 자동으로 관리. 메모리가 소진될 때마다 필요한 메모리보다 추가적인 메모리를 할당
+- 전체 메모리 확인 멤버 함수: cpacity()
+- 추가적인 메모리는 shrink_to_fit() 호출을 통해 리턴 가능
+
+- 재할당에는 비용이 발생하는데, reserve를 사용하면 재할당을 방지 가능
+성능
+- random access - O(1)
+- 끝에서 삽입 제거 - amortized O(1)
+- 삽입 삭제 - O(n)
+
+bool을 제외한 타입의 vector들은 다음을 만족시켜야함
+-  Container
+- AllocatorAwareContainer(since C++11)
+- SequenceContainer
+- ContiguousContainer(since C++17)
+- ReversibleContainer.
+
+모든 멤버 함수는 constexpr로 선언(컴파일 시간에 상수 표현식 결정). 컴파일 평가 시점에서 vector 객체를 사용하고 만들 수 있지만, 일반적으로 constexpr 객체를 만들 수 없다.
+이유: vector는 내부적으로 동적할당 사용하지만, 상수 표현에서 사용한 메모리는 평가 내에 할당/해제까지 완료되어야 함. vector는 평가 밖(런타임)에서 이루어짐
+
+*템플릿 파라미터*
+T
+- T는 복사 할당자와 복사 생성자를 만족해야 함
+- 필요조건은 컨테이너에서 수행되는 연산자에 의존하고, 일반적으로 소멸자를 만족해야 함
+- 만약 allocator completeness requirments를 만족시킨다면, 인스터스화된다.
+	allocator completeness requirments
+	- X is a complete type.
+	- Except for value_type, all the member types of std::allocator_traits<X> are complete types.
+allocator
+- Allocator 요구사항을 만족시켜야 함
+- Allocator::value_type이 T와 같지 않다면, 정의되어 있지 않은 동작이고 잘못된 프로그래밍이다.
+	Allocator
+	- 메모리 접근/주소 부여/할당/해제/오브젝트 생성 및 제거를 위한 캡슐화
+	-  AllocatorAwareContainer는 std::allocator_traits나 그것이 제공한 것들을 통해 할당자에 접근하기 때문에 요구사항 구현은 선택사항임
