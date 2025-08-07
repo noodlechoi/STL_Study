@@ -13,4 +13,7 @@ int main()
 	cout << endl;
 
 	MyVector mv{ 1, 2, 3, 4, 5 };
+	cout << mv.Size() << endl;
+	cout << mv.Capacity() << endl;
+
 }
