@@ -10,10 +10,18 @@ int main()
 	cout << v.size() << endl;
 	cout << v.capacity() << endl;
 
+	cout << "vector 출력" << endl;
+	for (int i = 0; i < v.size(); ++i) {
+		cout << v[i] << endl;
+	}
+
 	cout << endl;
 
-	MyVector mv{ 1, 2, 3, 4, 5 };
+	MyVector<int> mv{ 1, 2, 3, 4, 5 };
 	cout << mv.Size() << endl;
 	cout << mv.Capacity() << endl;
-
+	cout << "MyVector 출력" << endl;
+	for (int i = 0; i < mv.Size(); ++i) {
+		cout << mv[i] << endl;
+	}
 }
